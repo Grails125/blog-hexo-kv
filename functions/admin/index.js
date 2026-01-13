@@ -173,8 +173,7 @@ const loginHTML = `<!DOCTYPE html>
                     // 保存 token
                     localStorage.setItem('admin_token', data.token);
                     // 跳转到管理面板
-                    alert('登录成功！管理面板开发中...');
-                    // window.location.href = '/admin/dashboard';
+                    window.location.href = '/admin/dashboard';
                 } else {
                     errorDiv.textContent = data.error || '登录失败';
                     errorDiv.classList.add('show');
