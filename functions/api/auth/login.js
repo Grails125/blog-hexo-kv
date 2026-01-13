@@ -47,6 +47,11 @@ export async function onRequestPost(context) {
         JSON.stringify({
           success: false,
           error: "密码错误",
+          debug: {
+            inputHash,
+            expectedHash: ADMIN_PASSWORD_HASH,
+            envVarExists: !!env.ADMIN_PASSWORD_HASH,
+          },
         }),
         {
           status: 401,
