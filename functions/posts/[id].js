@@ -3,56 +3,94 @@
  * GET /posts/[id] - 展示单篇文章
  */
 
-import { marked } from 'https://cdn.jsdelivr.net/npm/marked@11.1.1/+esm';
-
 export async function onRequestGet(context) {
   const { params, env } = context;
   const { id } = params;
-  
+
   try {
     // 获取文章内容
-    const post = await env.BLOG_KV.get(`post:${id}`, { type: 'json' });
-    
-    if (!post || post.status !== 'published') {
+    const post = await env.BLOG_KV.get(`post:${id}`, { type: "json" });
+
+    if (!post || post.status !== "published") {
       return new Response(notFoundHTML, {
         status: 404,
-        headers: { 'Content-Type': 'text/html; charset=utf-8' },
+        headers: { "Content-Type": "text/html; charset=utf-8" },
       });
     }
-    
-    // 渲染 Markdown
-    const contentHTML = marked.parse(post.content);
-    
+
+    // 简单的 Markdown 渲染（替代 marked.js）
+    const contentHTML = simpleMarkdownRender(post.content);
+
     const html = generatePostHTML(post, contentHTML);
-    
+
     return new Response(html, {
-      headers: { 'Content-Type': 'text/html; charset=utf-8' },
+      headers: { "Content-Type": "text/html; charset=utf-8" },
     });
   } catch (error) {
     return new Response(errorHTML, {
       status: 500,
-      headers: { 'Content-Type': 'text/html; charset=utf-8' },
+      headers: { "Content-Type": "text/html; charset=utf-8" },
     });
   }
 }
 
+// 简单的 Markdown 渲染
+function simpleMarkdownRender(markdown) {
+  let html = markdown
+    // 代码块
+    .replace(/```(\w+)?\n([\s\S]*?)```/g, "<pre><code>$2</code></pre>")
+    // 标题
+    .replace(/^### (.*$)/gim, "<h3>$1</h3>")
+    .replace(/^## (.*$)/gim, "<h2>$1</h2>")
+    .replace(/^# (.*$)/gim, "<h1>$1</h1>")
+    // 粗体和斜体
+    .replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>")
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>")
+    // 链接
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+    // 图片
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">')
+    // 行内代码
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
+    // 引用
+    .replace(/^> (.*$)/gim, "<blockquote>$1</blockquote>")
+    // 列表
+    .replace(/^\* (.*$)/gim, "<li>$1</li>")
+    .replace(/^- (.*$)/gim, "<li>$1</li>")
+    // 段落
+    .replace(/\n\n/g, "</p><p>")
+    .replace(/\n/g, "<br>");
+
+  // 包装列表
+  html = html.replace(/(<li>.*<\/li>)/s, "<ul>$1</ul>");
+  // 包装段落
+  html = "<p>" + html + "</p>";
+
+  return html;
+}
+
 function generatePostHTML(post, contentHTML) {
-  const date = new Date(post.createdAt).toLocaleDateString('zh-CN', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
+  const date = new Date(post.createdAt).toLocaleDateString("zh-CN", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
-  
-  const tags = (post.tags || []).map(tag => 
-    \`<span class="tag">#\${tag}</span>\`
-  ).join('');
-  
-  return \`<!DOCTYPE html>
+
+  const tagsHTML = (post.tags || [])
+    .map((tag) => '<span class="tag">#' + tag + "</span>")
+    .join("");
+
+  const tagsSection = tagsHTML
+    ? '<div class="tags">' + tagsHTML + "</div>"
+    : "";
+
+  return `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>\${post.title} - 我的博客</title>
+    <title>${post.title} - 我的博客</title>
     <style>
         * {
             margin: 0;
@@ -248,24 +286,6 @@ function generatePostHTML(post, contentHTML) {
             margin: 24px 0;
         }
         
-        .article-content table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 24px 0;
-        }
-        
-        .article-content table th,
-        .article-content table td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: left;
-        }
-        
-        .article-content table th {
-            background: #f5f5f5;
-            font-weight: 600;
-        }
-        
         @media (max-width: 768px) {
             .article {
                 padding: 30px 20px;
@@ -295,23 +315,23 @@ function generatePostHTML(post, contentHTML) {
 
     <article class="article">
         <header class="article-header">
-            <h1 class="article-title">\${post.title}</h1>
+            <h1 class="article-title">${post.title}</h1>
             <div class="article-meta">
-                <span class="category-badge">\${post.category || '未分类'}</span>
-                <span>📅 \${date}</span>
-                \${tags ? \`<div class="tags">\${tags}</div>\` : ''}
+                <span class="category-badge">${post.category || "未分类"}</span>
+                <span>📅 ${date}</span>
+                ${tagsSection}
             </div>
         </header>
         
         <div class="article-content">
-            \${contentHTML}
+            ${contentHTML}
         </div>
     </article>
 </body>
-</html>\`;
+</html>`;
 }
 
-const notFoundHTML = \`<!DOCTYPE html>
+const notFoundHTML = `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -355,9 +375,9 @@ const notFoundHTML = \`<!DOCTYPE html>
         <a href="/posts">← 返回文章列表</a>
     </div>
 </body>
-</html>\`;
+</html>`;
 
-const errorHTML = \`<!DOCTYPE html>
+const errorHTML = `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -401,4 +421,4 @@ const errorHTML = \`<!DOCTYPE html>
         <a href="/posts">← 返回文章列表</a>
     </div>
 </body>
-</html>\`;
+</html>`;
