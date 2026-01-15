@@ -181,8 +181,6 @@ export async function onRequestDelete(context) {
 
     console.log("[DELETE Post] File deleted successfully");
 
-    await env.BLOG_R2.delete(filename);
-
     return new Response(
       JSON.stringify({
         success: true,
