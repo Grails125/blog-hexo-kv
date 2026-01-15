@@ -26,7 +26,8 @@ export async function onRequestPost(context) {
       );
     }
 
-    const { title, content, tags, category, status } = await request.json();
+    const { title, content, tags, category, cover, status } =
+      await request.json();
 
     // 验证必填字段
     if (!title || !content) {
@@ -54,6 +55,7 @@ export async function onRequestPost(context) {
       content,
       tags: tags || [],
       category: category || "未分类",
+      cover: cover || "",
       status: status || "draft", // draft 或 published
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -70,6 +72,7 @@ export async function onRequestPost(context) {
       id: postId,
       title,
       category,
+      tags: tags || [],
       status,
       createdAt: post.createdAt,
     });

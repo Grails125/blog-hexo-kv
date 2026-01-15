@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>博客管理后台</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+      body {
+        font-family: "Inter", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-900 h-screen flex overflow-hidden">
+    <div id="app" class="flex w-full h-full">
+      <!-- Sidebar -->
+      <aside
+        class="w-64 bg-white border-r border-slate-200 flex flex-col z-20 shadow-sm"
+      >
+        <div class="p-6 border-b border-slate-100">
+          <h1
+            class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent"
+          >
+            博客管理后台
+          </h1>
+        </div>
+
+        <div class="p-4 flex-1 overflow-y-auto">
+          <div class="mb-6">
+            <h2
+              class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3"
+            >
+              常用操作
+            </h2>
+            <a
+              href="/editor.html"
+              class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 mb-3 shadow-sm"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+              撰写新文章
+            </a>
+            <button
+              @click="publishBlog"
+              :disabled="publishing"
+              class="w-full bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+            >
+              <svg
+                v-if="!publishing"
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
+                />
+              </svg>
+              <svg
+                v-else
+                class="animate-spin"
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+              </svg>
+              {{ publishing ? '发布中...' : '发布全站' }}
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="flex-1 bg-slate-50 p-8 overflow-y-auto">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-slate-800">文章列表</h2>
+          <div class="text-sm text-slate-500">共 {{ posts.length }} 篇文章</div>
+        </div>
+
+        <!-- Messages -->
+        <div
+          v-if="message"
+          :class="`mb-6 p-4 rounded-lg flex items-center gap-2 ${messageType === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`"
+        >
+          <span>{{ message }}</span>
+          <button @click="message = ''" class="ml-auto hover:opacity-75">
+            ×
+          </button>
+        </div>
+
+        <!-- Posts Grid -->
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+        >
+          <!-- Create New Card -->
+          <a
+            href="/editor.html"
+            class="flex flex-col items-center justify-center h-48 rounded-xl border-2 border-dashed border-slate-300 hover:border-blue-400 hover:bg-blue-50 transition-all text-slate-400 hover:text-blue-500 cursor-pointer group"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="mb-2 group-hover:scale-110 transition-transform"
+            >
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            <span class="font-medium">新建文章</span>
+          </a>
+
+          <!-- Post Card -->
+          <div
+            v-for="post in posts"
+            :key="post.filename"
+            class="bg-white rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow flex flex-col overflow-hidden group"
+          >
+            <div
+              class="p-5 flex-1 cursor-pointer flex gap-4"
+              @click="editPost(post.filename)"
+            >
+              <div class="flex-1 min-w-0">
+                <div class="flex items-start justify-between mb-2">
+                  <div
+                    class="h-10 w-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-lg"
+                  >
+                    📝
+                  </div>
+                  <!-- Categories Badge -->
+                  <div
+                    class="flex gap-1"
+                    v-if="post.categories && post.categories.length"
+                  >
+                    <span
+                      v-for="cat in post.categories"
+                      :key="cat"
+                      class="text-xs px-2 py-1 bg-slate-100 text-slate-500 rounded-full"
+                    >
+                      {{ cat }}
+                    </span>
+                  </div>
+                </div>
+                <h3
+                  class="font-semibold text-slate-800 line-clamp-2 group-hover:text-blue-600 transition-colors mb-2"
+                >
+                  {{ post.title || post.filename }}
+                </h3>
+
+                <div class="space-y-2">
+                  <p
+                    class="text-xs text-slate-400 font-mono flex items-center gap-1"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <rect
+                        x="3"
+                        y="4"
+                        width="18"
+                        height="18"
+                        rx="2"
+                        ry="2"
+                      ></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    {{ post.date }}
+                  </p>
+                  <div
+                    v-if="post.tags && post.tags.length"
+                    class="flex flex-wrap gap-1"
+                  >
+                    <span
+                      v-for="tag in post.tags"
+                      :key="tag"
+                      class="text-[10px] px-1.5 py-0.5 bg-indigo-50 text-indigo-600 rounded"
+                      >#{{ tag }}</span
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- Cover Image Thumbnail -->
+              <div v-if="post.cover" class="w-24 h-24 flex-shrink-0">
+                <img
+                  :src="post.cover"
+                  alt="Cover"
+                  class="w-full h-full object-cover rounded-lg border border-slate-100"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Log Output -->
+        <div
+          v-if="consoleOutput"
+          class="max-w-4xl mx-auto mt-12 bg-slate-900 rounded-xl shadow-lg border border-slate-800 overflow-hidden"
+        >
+          <div
+            class="p-3 bg-slate-800 border-b border-slate-700 flex justify-between items-center"
+          >
+            <span class="text-xs font-mono text-slate-400">构建日志</span>
+            <button
+              @click="consoleOutput = ''"
+              class="text-slate-500 hover:text-slate-300"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+          <div
+            class="p-4 font-mono text-xs text-green-400 whitespace-pre-wrap max-h-64 overflow-y-auto leading-relaxed"
+          >
+            {{ consoleOutput }}
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const { createApp, ref, onMounted } = Vue;
+
+      createApp({
+        setup() {
+          const posts = ref([]);
+          const message = ref("");
+          const messageType = ref("success");
+          const publishing = ref(false);
+          const consoleOutput = ref("");
+
+          const fetchPosts = async () => {
+            try {
+              const res = await fetch("/api/posts");
+              posts.value = await res.json();
+            } catch (e) {
+              console.error(e);
+            }
+          };
+
+          const editPost = (filename) => {
+            window.location.href = `/editor.html?id=${filename}`;
+          };
+
+          const publishBlog = async () => {
+            publishing.value = true;
+            consoleOutput.value = "正在启动构建流程...";
+            try {
+              const res = await fetch("/api/publish", { method: "POST" });
+              const data = await res.json();
+              if (res.ok) {
+                consoleOutput.value = data.output;
+                message.value = "发布成功！站点已更新。";
+                messageType.value = "success";
+              } else {
+                throw new Error(data.error);
+              }
+            } catch (e) {
+              message.value = "发布失败: " + e.message;
+              messageType.value = "error";
+              consoleOutput.value += "\n错误: " + e.message;
+            } finally {
+              publishing.value = false;
+            }
+          };
+
+          onMounted(() => {
+            fetchPosts();
+          });
+
+          return {
+            posts,
+            message,
+            messageType,
+            publishing,
+            consoleOutput,
+            editPost,
+            publishBlog,
+          };
+        },
+      }).mount("#app");
+    </script>
+  </body>
+</html>

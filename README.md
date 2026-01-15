@@ -44,7 +44,7 @@ npm run clean
    - **构建命令**: `npm run build`
    - **输出目录**: `public`
 5. 添加环境变量:
-   - `NODE_VERSION`: `18`
+   - `NODE_VERSION`: `22`
 6. 绑定 KV 命名空间:
    - 变量名: `BLOG_KV`
    - KV 命名空间: 选择之前创建的 `BLOG_KV`

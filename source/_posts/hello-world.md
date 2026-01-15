@@ -1,12 +1,8 @@
 ---
 title: 欢迎来到我的博客
-date: 2026-01-13 14:00:00
-tags:
-  - 博客
-  - Hexo
-  - Cloudflare
-categories:
-  - 公告
+date: 2026-01-14 17:51:58
+categories: [公告]
+tags: [博客, 教程]
 ---
 
 # 欢迎来到我的博客

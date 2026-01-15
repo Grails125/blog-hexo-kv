@@ -113,6 +113,7 @@ export async function onRequestPut(context) {
             id,
             title: updatedPost.title,
             category: updatedPost.category,
+            tags: updatedPost.tags || [],
             status: updatedPost.status,
             createdAt: updatedPost.createdAt,
           }
