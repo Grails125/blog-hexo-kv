@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "hexo clean && hexo generate",
+    "download-r2": "node scripts/download-r2-posts.js",
+    "build": "npm run download-r2 && hexo clean && hexo generate",
     "clean": "hexo clean",
     "deploy": "hexo deploy",
     "server": "hexo server",
@@ -13,6 +14,7 @@
     "version": "8.1.1"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.969.0",
     "body-parser": "^2.2.2",
     "cors": "^2.8.5",
     "express": "^5.2.1",

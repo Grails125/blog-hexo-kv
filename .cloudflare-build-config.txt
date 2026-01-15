@@ -2,9 +2,5 @@
 
 # Node.js 版本
 NODE_VERSION=22
-
-# 构建命令
-npm run build
-
-# 输出目录
-public
+BUILD_COMMAND=npm run build
+OUTPUT_DIR=public

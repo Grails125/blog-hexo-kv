@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>欢迎来到我的博客</title>
+    <url>/2026/01/14/hello-world/</url>
+    <content><![CDATA[欢迎来到我的博客这是一个基于 Hexo 和 Solitude 主题构建的现代化博客系统,部署在 Cloudflare Pages 上。
+特色功能🚀 高性能
+静态站点生成,加载速度极快
+Cloudflare CDN 全球加速
+优化的图片和资源加载
+
+💬 评论系统本博客集成了基于 Cloudflare KV 的评论系统,你可以在文章下方留下你的想法。
+📊 访问统计每篇文章都有访问量统计,让你了解文章的受欢迎程度。
+❤️ 点赞功能喜欢某篇文章?点个赞让我知道!
+🔍 全站搜索使用搜索功能快速找到你感兴趣的内容。
+📡 RSS 订阅通过 RSS 订阅,第一时间获取博客更新。
+技术栈
+Hexo: 快速、简洁且高效的博客框架
+Solitude 主题: 现代化、美观的主题设计
+Cloudflare Pages: 免费的静态站点托管
+Cloudflare KV: 键值存储,支持动态功能
+Cloudflare Workers: 无服务器函数,处理 API 请求
+
+开始探索浏览侧边栏的分类和标签,发现更多精彩内容!
+
+本文由 Hexo 自动生成
+]]></content>
+      <categories>
+        <category>公告</category>
+      </categories>
+      <tags>
+        <tag>博客</tag>
+        <tag>教程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>如何使用本博客</title>
+    <url>/2026/01/14/how-to-use/</url>
+    <content><![CDATA[如何使用本博客本文将介绍如何充分利用本博客的各项功能。
+📖 阅读文章浏览方式
+首页: 显示最新发布的文章
+归档: 按时间顺序查看所有文章
+分类: 按主题分类浏览
+标签: 按标签筛选相关文章
+
+文章功能每篇文章都包含以下功能:
+
+访问统计: 查看文章阅读量
+点赞: 为喜欢的文章点赞
+评论: 在文章下方发表评论
+
+💬 发表评论在文章底部的评论区:
+
+填写你的昵称
+(可选) 填写邮箱地址
+输入评论内容
+点击”提交”按钮
+
+评论将实时保存到 Cloudflare KV 数据库。
+🔍 搜索文章使用顶部的搜索框:
+
+输入关键词
+系统会实时显示匹配的文章
+点击结果即可跳转
+
+搜索支持:
+
+文章标题
+文章内容
+标签和分类
+
+📡 订阅更新RSS 订阅在浏览器中访问 /atom.xml 获取 RSS 订阅源,使用你喜欢的 RSS 阅读器订阅。
+推荐的 RSS 阅读器:
+
+Feedly: 网页版,跨平台
+Inoreader: 功能强大
+NetNewsWire: macOS&#x2F;iOS 原生应用
+
+📱 移动端体验本博客完全响应式设计,在手机和平板上也能获得良好的阅读体验:
+
+自适应布局
+触摸友好的交互
+优化的字体大小
+
+🎨 主题特色Solitude 主题提供:
+
+暗色模式: 自动适配系统主题
+代码高亮: 支持多种编程语言
+图片懒加载: 提升页面加载速度
+平滑滚动: 优雅的页面滚动效果
+
+💡 小贴士
+快捷键: 使用键盘方向键可以快速浏览文章
+分享: 点击分享按钮将文章分享到社交媒体
+打印: 文章支持打印,自动优化排版
+
+🐛 反馈问题如果你在使用过程中遇到任何问题,欢迎通过评论或邮件联系我。
+
+祝你阅读愉快! 📚
+]]></content>
+      <categories>
+        <category>帮助</category>
+      </categories>
+      <tags>
+        <tag>教程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>测试23232</title>
+    <url>/2026/01/14/%E6%B5%8B%E8%AF%95/</url>
+    <content><![CDATA[测试文本 hhhh
+打死我 1111]]></content>
+      <categories>
+        <category>测试</category>
+      </categories>
+      <tags>
+        <tag>博客</tag>
+        <tag>测试</tag>
+      </tags>
+  </entry>
+</search>

@@ -1,55 +1,64 @@
 /**
- * 文章列表 API
- * GET /api/posts/list - 获取文章列表
+ * 文章列表 API - 从 R2 读取
+ * GET /api/posts/list
  */
 
-import { verifyToken } from "../auth/login.js";
-
 export async function onRequestGet(context) {
-  const { request, env } = context;
-  const url = new URL(request.url);
-  const status = url.searchParams.get("status"); // published, draft, all
+  const { env, request } = context;
 
   try {
-    // 检查是否是管理员（管理员可以看到草稿）
-    const token = request.headers.get("Authorization")?.replace("Bearer ", "");
-    const isAdmin = await verifyToken(env, token);
+    // 检查管理员权限
+    const authHeader = request.headers.get("Authorization");
+    let isAdmin = false;
 
-    // 获取文章列表
-    const postsList =
-      (await env.BLOG_KV.get("posts:list", { type: "json" })) || [];
-
-    // 过滤文章
-    let filteredPosts = postsList;
-
-    if (!isAdmin) {
-      // 非管理员只能看到已发布的文章
-      filteredPosts = postsList.filter((post) => post.status === "published");
-    } else if (status && status !== "all") {
-      // 管理员可以按状态筛选
-      filteredPosts = postsList.filter((post) => post.status === status);
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const token = authHeader.substring(7);
+      const role = await env.BLOG_KV.get(`auth:${token}`);
+      isAdmin = role === "admin";
     }
+
+    // 列出 R2 中的所有文章
+    const list = await env.BLOG_R2.list({ prefix: "posts/" });
+
+    const posts = [];
+    for (const item of list.objects) {
+      if (!item.key.endsWith(".md")) {
+        continue;
+      }
+
+      // 从 customMetadata 获取信息
+      const obj = await env.BLOG_R2.head(item.key);
+      const metadata = obj.customMetadata || {};
+
+      posts.push({
+        filename: item.key,
+        title: metadata.title || "Untitled",
+        status: metadata.status || "published",
+        createdAt: metadata.createdAt || item.uploaded.toISOString(),
+        size: item.size,
+      });
+    }
+
+    // 按创建时间倒序排序
+    posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    // 非管理员只能看到已发布的文章
+    const filteredPosts = isAdmin
+      ? posts
+      : posts.filter((p) => p.status === "published");
 
     return new Response(
       JSON.stringify({
         success: true,
         data: filteredPosts,
-        total: filteredPosts.length,
       }),
-      {
-        headers: { "Content-Type": "application/json" },
-      }
+      { headers: { "Content-Type": "application/json" } }
     );
   } catch (error) {
+    console.error("Error listing posts:", error);
     return new Response(
-      JSON.stringify({
-        success: false,
-        error: error.message,
-      }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
+      JSON.stringify({ success: false, error: error.message }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 }
