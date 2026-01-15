@@ -57,7 +57,7 @@ const adminHTML = `<!DOCTYPE html>
             </h2>
             <a
               href="/admin-new/editor"
-              class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 mb-3 shadow-sm"
+              style="background: #425AEF;" class="w-full hover:opacity-90 text-white font-medium py-2 px-4 rounded-lg transition-all flex items-center justify-center gap-2 mb-3 shadow-sm"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 5v14M5 12h14" />
@@ -67,7 +67,7 @@ const adminHTML = `<!DOCTYPE html>
             <button
               @click="triggerRebuild"
               :disabled="rebuilding"
-              class="w-full bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+              style="background: #10b981;" class="w-full hover:opacity-90 disabled:opacity-50 text-white font-medium py-2 px-4 rounded-lg transition-all flex items-center justify-center gap-2 mb-3 shadow-sm"
             >
               <svg v-if="!rebuilding" xmlns="http://www.w3.org/2000/svg"
                 width="16"
