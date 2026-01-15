@@ -259,56 +259,38 @@ const editorHTML = `<!DOCTYPE html>
         }
       }
 
-            async function loadPost(postId) {
+      async function loadPost(postId) {
         try {
-          const res = await fetch(`/api/posts/${postId}`);
+          const res = await fetch(\`/api/posts/\${postId}\`);
           const data = await res.json();
           if (data.success) {
             const post = data.data;
             document.getElementById("postId").value = post.id;
             document.getElementById("title").value = post.title;
             document.getElementById("tags").value = (post.tags || []).join(", ");
-            document.getElementById("cover").value = post.cover || "";
+                        document.getElementById("cover").value = post.cover || "";
             easyMDE.value(post.content);
             
-            // 先加载分类列表,然后设置分类值
+            // 先加载分类列表
             await loadMetaData();
             
-            // 设置分类值(如果分类列表中没有,则添加)
-            const categorySelect = document.getElementById("category");
-            const categoryValue = post.category || "";
-            
-            if (categoryValue) {
-              // 检查分类是否存在于下拉列表中
+            // 然后设置分类值
+            if (post.category) {
+              const categorySelect = document.getElementById("category");
               const optionExists = Array.from(categorySelect.options).some(
-                option => option.value === categoryValue
+                option => option.value === post.category
               );
               
-              // 如果不存在,添加到列表中
               if (!optionExists) {
                 const newOption = document.createElement("option");
-                newOption.value = categoryValue;
-                newOption.textContent = categoryValue;
+                newOption.value = post.category;
+                newOption.textContent = post.category;
                 categorySelect.appendChild(newOption);
-                existingCategories.push(categoryValue);
+                existingCategories.push(post.category);
               }
               
-              categorySelect.value = categoryValue;
+              categorySelect.value = post.category;
             }
-          }
-        } catch (e) {
-          alert("加载文章失败: " + e.message);
-        }
-      }
-        
-          (\`/api/posts/\${postId}\`);
-          const data = await res.json();
-          if (data.success) {
-            const post = data.data;
-            document.getElementById("postId").value = post.id;
-            document.getElementById("title").value = post.title;
-            document.getElementById("tags").value = (post.tags || []).join(", ");
-            document.getElementById("category").value = post.category || "";
             document.getElementById("cover").value = post.cover || "";
             easyMDE.value(post.content);
           }
