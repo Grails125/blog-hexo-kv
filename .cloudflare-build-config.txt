@@ -1,7 +1,7 @@
 # Cloudflare Pages 构建配置
 
 # Node.js 版本
-NODE_VERSION=18
+NODE_VERSION=22
 
 # 构建命令
 npm run build
