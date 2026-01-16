@@ -19,7 +19,7 @@
    - **Framework preset**: None (或 Hexo)
    - **Build command**: `npm run build`
    - **Build output directory**: `public`
-   - **Environment variables**: 添加 `NODE_VERSION` = `18`
+   - **Environment variables**: 添加 `NODE_VERSION` = `22`
 
 3. **重新绑定 KV**:
    - 项目创建后，立即去 **Settings** -> **Functions**
@@ -45,7 +45,7 @@
 
 | 变量名         | 值   | 说明         |
 | -------------- | ---- | ------------ |
-| `NODE_VERSION` | `18` | Node.js 版本 |
+| `NODE_VERSION` | `22` | Node.js 版本 |
 
 **R2 存储配置 (用于构建时下载文章):**
 
